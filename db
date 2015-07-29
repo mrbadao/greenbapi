@@ -1,0 +1,46 @@
+CREATE SCHEMA `greenb_cms` DEFAULT CHARACTER SET utf8 ;
+
+CREATE TABLE `greenb_cms`.`tokens` (
+  `uid` int(10) unsigned NOT NULL,
+  `token` varchar(40) NOT NULL,
+  `last_access_ip` varchar(64) DEFAULT NULL,
+  `expired` timestamp,
+  `last_access` datetime DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
+  KEY `idx_uid` (`uid`),
+  KEY `idx_token` (`token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `greenb_cms`.`masterusers` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(128) NOT NULL,
+  `password` varchar(64) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created` datetime DEFAULT NULL,
+  `modified` datetime DEFAULT NULL,
+
+  PRIMARY KEY (`id`),
+  KEY `loginid_idx` (`email`,`password`),
+  KEY `is_active_idx` (`is_active`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+CREATE SCHEMA `greenb_printer` DEFAULT CHARACTER SET utf8 ;
+
+CREATE TABLE `greenb_printer`.`image` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `filename` varchar(128) NOT NULL,
+  `path` varchar(128) NOT NULL,
+  `mime_type` varchar(4) DEFAULT NULL,
+  `display_mode` int(1) NOT NULL DEFAULT 1,
+  `signature` varchar(255) not null,
+  `created` datetime NULL DEFAULT NULL,
+  `modified` datetime NULL DEFAULT NULL,
+
+  PRIMARY KEY (`id`),
+  KEY `id_idx` (`id`),
+  KEY `signature_idx` (`signature`)
+
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
