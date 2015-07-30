@@ -21,7 +21,7 @@ class AuthenticationController extends Controller
             case self::AUTHORIZTION_ADMIN_LOGIN_KEY:
                 $authModel = new AdminLogin($postData['data']);
                 $authModel->validate();
-                $this->render(array("success" => false, "data" => $authModel->authenticate()));
+                $this->render(array("success" => true, "data" => $authModel->authenticate()));
                 break;
 
             default:
