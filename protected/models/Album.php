@@ -1,26 +1,29 @@
 <?php
 
 /**
- * This is the model class for table "image".
+ * This is the model class for table "albums".
  *
- * The followings are the available columns in table 'image':
+ * The followings are the available columns in table 'albums':
  * @property string $id
- * @property string $title
- * @property string $filename
- * @property string $path
- * @property string $mime_type
+ * @property string $is_use_third_party
+ * @property string $thrird_party_id
+ * @property string $name
+ * @property string $description
  * @property integer $display_mode
- * @property string $signature
- * @property string $album_id
  * @property string $created
  * @property string $modified
  */
-class ImageContent extends CActiveRecord
+class Album extends CActiveRecord
 {
+    const THRIRD_PARTY_IMGUR = "imgur";
+
+    const DISPLAY_MODE_PUBLIC = 1;
+    const DISPLAY_MODE_PRIVATE = 1;
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
-	 * @return ImageContent the static model class
+	 * @return Albums the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -40,7 +43,7 @@ class ImageContent extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'image';
+		return 'album';
 	}
 
 	/**
@@ -51,17 +54,15 @@ class ImageContent extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('title, filename, path, signature, album_id', 'required'),
-//			array('signature', 'unique'),
+			array('name, display_mode', 'required'),
+//			array('name', 'unique'),
 			array('display_mode', 'numerical', 'integerOnly'=>true),
-			array('title', 'length', 'max'=>50),
-			array('filename, path', 'length', 'max'=>128),
-			array('mime_type', 'length', 'max'=>40),
-			array('signature', 'length', 'max'=>255),
-			array('created, modified', 'safe'),
+			array('is_use_third_party', 'length', 'max'=>20),
+			array('thrird_party_id, name', 'length', 'max'=>50),
+			array('description, created, modified', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, title, filename, path, mime_type, display_mode, signature, created, modified', 'safe', 'on'=>'search'),
+			array('id, is_use_third_party, thrird_party_id, name, description, display_mode, created, modified', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -83,12 +84,11 @@ class ImageContent extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'title' => 'Title',
-			'filename' => 'Filename',
-			'path' => 'Path',
-			'mime_type' => 'Mime Type',
+			'is_use_third_party' => 'Is Use Third Party',
+			'thrird_party_id' => 'Thrird Party',
+			'name' => 'Name',
+			'description' => 'Description',
 			'display_mode' => 'Display Mode',
-			'signature' => 'Signature',
 			'created' => 'Created',
 			'modified' => 'Modified',
 		);
@@ -106,12 +106,11 @@ class ImageContent extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id,true);
-		$criteria->compare('title',$this->title,true);
-		$criteria->compare('filename',$this->filename,true);
-		$criteria->compare('path',$this->path,true);
-		$criteria->compare('mime_type',$this->mime_type,true);
+		$criteria->compare('is_use_third_party',$this->is_use_third_party,true);
+		$criteria->compare('thrird_party_id',$this->thrird_party_id,true);
+		$criteria->compare('name',$this->name,true);
+		$criteria->compare('description',$this->description,true);
 		$criteria->compare('display_mode',$this->display_mode);
-		$criteria->compare('signature',$this->signature,true);
 		$criteria->compare('created',$this->created,true);
 		$criteria->compare('modified',$this->modified,true);
 
@@ -128,6 +127,34 @@ class ImageContent extends CActiveRecord
         }
         $this->modified = $now;
 
-        return true;
+        if(!$this->is_use_third_party) return true;
+
+        switch($this->is_use_third_party){
+            case self::THRIRD_PARTY_IMGUR:
+                $imgUrUploader = Yii::app()->imgUrUploader;
+
+                $pVars = array(
+                    "title" => $this->name,
+                    "description" => $this->description ? $this->description :$this->name,
+                    "privacy" => "hidden"
+                );
+
+                $imgurAlbum = $imgUrUploader->createAlbum($pVars);
+
+                if($imgurAlbum && $imgurAlbum->_id){
+                    $this->thrird_party_id = $imgurAlbum->_id;
+                    return true;
+                }
+                else{
+                    $this->addError("is_use_third_party","The service down.");
+                    return false;
+                }
+
+                break;
+
+            default:
+                $this->addError("is_use_third_party","The service isn't supported.");
+                return false;
+        }
     }
 }

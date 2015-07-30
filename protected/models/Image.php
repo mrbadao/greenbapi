@@ -11,6 +11,10 @@ class Image extends CModel
     public $extension;
     public $content;
     public $mime_type;
+    public $title;
+    public $third_party;
+
+    private $accessLink;
 
     protected $allowType = array("image/jpeg");
 
@@ -19,6 +23,7 @@ class Image extends CModel
         foreach ($params as $attr => $val) {
             $this->{$attr} = $val;
         }
+        $this->accessLink = '';
     }
 
     /**
@@ -75,23 +80,57 @@ class Image extends CModel
         return sprintf('%s.%s', $this->filename, $this->extension);
     }
 
-    public function save($path = null)
+    public function save($album_id, $path = null)
     {
+        $album = Album::model()->findbyPk($album_id);
+
+        if (!$album) return false;
         if (!$this->validate()) return false;
 
-        $path = $path ? $path : Yii::getPathOfAlias("application.runtime");
-        $imgData = base64_decode($this->content);
-        $filename = sprintf($path . DIRECTORY_SEPARATOR . "%s.%s", $this->filename, $this->extension);
-        file_put_contents($filename, $imgData);
+        switch ($album->is_use_third_party) {
+            case Album::THRIRD_PARTY_IMGUR:
+                $imgUrUploader = Yii::app()->imgUrUploader;
 
-        return true;
+                if (!$imgUrUploader->checkAlbumExists($album->thrird_party_id)) return false;
+
+                $pVars = array(
+                    'image' => $this->content,
+                    'title' => $this->title,
+                    'description' => $this->title,
+                    "type" => "base64",
+                    "album" => $album->thrird_party_id,
+                    "name" => $this->getfullname(),
+                );
+
+                $ImgUrImage = $imgUrUploader->uploadImage($pVars);
+                if ($ImgUrImage && $ImgUrImage->_id) {
+                    $this->accessLink = $ImgUrImage->getAttribute("link");
+                    return true;
+                } else return false;
+                break;
+
+            default:
+                $path = $path ? $path : IMAGE_UPLOAD_PATH;
+                $imgData = base64_decode($this->content);
+                $filename = sprintf($path . DIRECTORY_SEPARATOR . "%s.%s", $this->filename, $this->extension);
+                file_put_contents($filename, $imgData);
+
+                if(!file_exists($filename)) return false;
+                $this->accessLink = sprintf("%s/%s/%s",Yii::app()->getBaseUrl(true),IMAGE_UPLOAD_URI,$this->getfullname());
+                return true;
+        }
     }
 
     public function removeImage($path = null)
     {
         $path = $path ? $path : Yii::getPathOfAlias("application.runtime");
         $filename = sprintf($path . DIRECTORY_SEPARATOR . "%s.%s", $this->filename, $this->extension);
-        if(file_exists($filename)) unlink($filename);
+        if (file_exists($filename)) unlink($filename);
+    }
+
+    public function getAccessLink()
+    {
+      return $this->accessLink;
     }
 
     public static function getBase64Data($filename = "sample.jpg")

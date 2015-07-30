@@ -44,3 +44,25 @@ CREATE TABLE `greenb_printer`.`image` (
   KEY `signature_idx` (`signature`)
 
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+ALTER TABLE `greenb_printer`.`image`
+ADD COLUMN `album_id` INT(10) NOT NULL AFTER `id`;
+ALTER TABLE `greenb_printer`.`image`
+CHANGE COLUMN `name` `title` VARCHAR(50) NOT NULL ;
+
+
+CREATE TABLE `greenb_printer`.`album` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `is_use_third_party`  varchar(20) DEFAULT NULL,
+  `thrird_party_id` varchar(50) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `description` text DEFAULT NULL,
+  `display_mode` int(1) NOT NULL DEFAULT 1,
+  `created` datetime NULL DEFAULT NULL,
+  `modified` datetime NULL DEFAULT NULL,
+
+  PRIMARY KEY (`id`),
+  KEY `id_idx` (`id`),
+  KEY `thrird_party_id_idx` (`thrird_party_id`)
+
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

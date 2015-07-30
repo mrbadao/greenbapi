@@ -37,6 +37,16 @@ return array(
 			// enable cookie-based authentication
 			'allowAutoLogin'=>true,
 		),
+
+        // imgur.com upload component
+        'imgUrUploader'=>array(
+            'class'=>'ext.ImgurUploader',
+            'refreshToken'=>'6e97118f0e829c64666042b8db5933e9dcd91490',
+            'client_id'=>'9e8880b06317c45',
+            'client_secret'=>'fdc4c1cd616d15aabb3bc2e5504a9916840b3e57',
+            'user_id'=>'mrbadao',
+        ),
+
 		// uncomment the following to enable URLs in path-format
 
 		'urlManager'=>array(
