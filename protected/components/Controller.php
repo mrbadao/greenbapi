@@ -152,7 +152,9 @@ class Controller extends CController
             502 => 'Bad Gateway',
             503 => 'Service Unavailable',
             504 => 'Gateway Timeout',
-            505 => 'HTTP Version Not Supported'
+            505 => 'HTTP Version Not Supported',
+            1000 => 'Token invalid.',
+            1001 => 'Validate Error',
         );
 
         return (isset($codes[$status])) ? $codes[$status] : '';
@@ -170,7 +172,7 @@ class Controller extends CController
         $jsonData = file_get_contents("php://input");
         $postData = json_decode($jsonData, true);
 
-        if(!$postData) throw new CHttpException(400, "Bad Request.");
+        if (!$postData) throw new CHttpException(400, "Bad Request.");
 
         return $postData;
     }
@@ -190,5 +192,40 @@ class Controller extends CController
     {
         $httpRequestHeaders = getallheaders();
         return array_key_exists($name, $httpRequestHeaders) ? $httpRequestHeaders[$name] : null;
+    }
+
+
+    /**
+     * @param $postData
+     * @param array $params
+     * @return mixed
+     * @throws \CHttpException
+     */
+    protected function checkDatatInput($postData, $params = array())
+    {
+        if (!isset($postData['Request-Agent']) || !in_array($postData['Request-Agent'], Yii::app()->params['requestAgents'])) throw new CHttpException(400, $this->getStatusCodeMessage(400));
+        if (!isset($postData['data']) || !is_array($postData['data'])) throw new CHttpException(204, $this->getStatusCodeMessage(204));
+        foreach ($params as $param) {
+            if (!isset($postData['data'][$param])) {
+                throw new CHttpException(204, $this->getStatusCodeMessage(204));
+            }
+        }
+
+        return $postData['data'];
+    }
+
+
+    /**
+     * @param $AUTHORIZTION_KEY
+     * @return bool
+     * @throws \CHttpException
+     */
+    public function validateAuthorizationToken($AUTHORIZTION_KEY)
+    {
+        $authorization = explode(' ', self::getHttpRequestHeaderAuthorization());
+
+        if (count($authorization) != 3) throw new CHttpException(401, $this->getStatusCodeMessage(401));
+        if ($authorization[0] != $AUTHORIZTION_KEY || !Tokens::checkToken($authorization[1], $authorization[2])) throw new CHttpException(401, $this->getStatusCodeMessage(401));
+        return true;
     }
 }

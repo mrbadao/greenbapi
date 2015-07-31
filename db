@@ -25,6 +25,23 @@ CREATE TABLE `greenb_cms`.`masterusers` (
   KEY `is_active_idx` (`is_active`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+CREATE TABLE `greenb_cms`.`cashier` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `loginid` varchar(60) NOT NULL,
+  `password` varchar(64) NOT NULL,
+  `display_name` varchar(250) NOT NULL,
+  `phone` varchar(50) NOT NULL,
+  `address` varchar(100) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
+  `modified` datetime DEFAULT NULL,
+  `status` int(11) NOT NULL DEFAULT '1',
+
+  PRIMARY KEY (`id`),
+  KEY `loginid_key` (`loginid`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
 
 CREATE SCHEMA `greenb_printer` DEFAULT CHARACTER SET utf8 ;
 

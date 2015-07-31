@@ -55,6 +55,7 @@ return array(
 			'rules'=>array(
 				'gii/<action:\w+>'=> 'gii/<action>',
 				array('authentication/authenticate', 'pattern'=>'auth/authenticate', 'verb'=>'POST'),
+				array('authentication/validatetoken', 'pattern'=>'auth/validatetoken', 'verb'=>'POST'),
 				'posts/<tag:.*?>'=>'post/index',
 
 				// Other controllers
