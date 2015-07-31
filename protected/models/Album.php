@@ -18,7 +18,7 @@ class Album extends CActiveRecord
     const THRIRD_PARTY_IMGUR = "imgur";
 
     const DISPLAY_MODE_PUBLIC = 1;
-    const DISPLAY_MODE_PRIVATE = 1;
+    const DISPLAY_MODE_PRIVATE = 0;
 
 	/**
 	 * Returns the static model of the specified AR class.

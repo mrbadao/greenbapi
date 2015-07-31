@@ -112,6 +112,7 @@ return array(
 	'params'=>array(
 		// this is used in contact page
 		'duration'=>'7200',
+		'cache_duration'=>'3600',
         'requestAgents' => array("Android", "Winform"),
 	),
 );

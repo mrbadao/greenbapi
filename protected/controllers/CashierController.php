@@ -46,7 +46,7 @@ class CashierController extends Controller
         $postData = $this->getJsonData();
         $postData = $this->checkDatatInput($postData, array("cashier"));
         if (!isset($postData["cashier"]["id"]) || !is_numeric($postData["cashier"]["id"])) throw new CHttpException(400, $this->getStatusCodeMessage(400));
-        $cashier = Cashier::model()->findbyPk($postData["cashier"]["id"]);
+        $cashier = Cashier::model()->findByPk($postData["cashier"]["id"]);
         if (!$cashier) {
             throw new CHttpException(204, $this->getStatusCodeMessage(204));
         }
@@ -79,7 +79,7 @@ class CashierController extends Controller
         $postData = $this->getJsonData();
         $postData = $this->checkDatatInput($postData, array("id"));
 
-        $cashier = Cashier::model()->findbyPk($postData["id"]);
+        $cashier = Cashier::model()->findByPk($postData["id"]);
 
         if (!$cashier) {
             throw new CHttpException(204, $this->getStatusCodeMessage(204));
@@ -110,24 +110,26 @@ class CashierController extends Controller
         $this->validateAuthorizationToken(self::AUTHORIZTION_KEY);
         $postData = $this->getJsonData();
         $postData = $this->checkDatatInput($postData, array("pagesize"));
-        $postData["page"] = isset($postData["page"]) && is_numeric($postData["page"]) ? $postData["page"] : 1;
+        $postData["page"] = isset($postData["page"]) && is_numeric($postData["page"]) && $postData["page"] >= 1 ? $postData["page"] : 1;
+        $postData["pagesize"] = isset($postData["pagesize"]) && is_numeric($postData["pagesize"]) && $postData["pagesize"] >= 1 ? $postData["pagesize"] : 10;
 
+        $dependency = new CDbCacheDependency();
         $criteria = new CDbCriteria();
         $criteria->limit = $postData["pagesize"];
         $criteria->offset = $criteria->limit * ($postData["page"] - 1);
 
-        $count = Cashier::model()->count($criteria);
+        $count = Cashier::model()->cache(Yii::app()->params["cache_duration"], $dependency)->count($criteria);
         $cashiers = array();
 
-        foreach (Cashier::model()->findAll($criteria) as $cashier) {
+        foreach (Cashier::model()->cache(Yii::app()->params["cache_duration"], $dependency)->findAll($criteria) as $cashier) {
             $cashiers[] = $cashier->attributes;
         }
 
         $this->render(array(
-            "success" => false,
+            "success" => true,
             "data" => array(
                 "cashiers" => $cashiers,
-                "page" => ceil($count / $postData["pagesize"]),
+                "pages" => ceil($count / $postData["pagesize"]),
             )
         ));
     }
