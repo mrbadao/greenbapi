@@ -56,7 +56,8 @@ return array(
 				'gii/<action:\w+>'=> 'gii/<action>',
 				array('authentication/authenticate', 'pattern'=>'auth/authenticate', 'verb'=>'POST'),
 				array('authentication/validatetoken', 'pattern'=>'auth/validatetoken', 'verb'=>'POST'),
-				array('cashier/getcashier', 'pattern'=>'cashier/getcashier', 'verb'=>'POST'),
+				array('cashier/getcashier', 'pattern'=>'cashier/getcashiers', 'verb'=>'POST'),
+				array('cashier/getcashier', 'pattern'=>'cashier/createcashier', 'verb'=>'POST'),
 				'posts/<tag:.*?>'=>'post/index',
 
 				// Other controllers

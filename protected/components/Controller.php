@@ -225,7 +225,8 @@ class Controller extends CController
         $authorization = explode(' ', self::getHttpRequestHeaderAuthorization());
 
         if (count($authorization) != 3) throw new CHttpException(401, $this->getStatusCodeMessage(401));
-        if ($authorization[0] != $AUTHORIZTION_KEY || !Tokens::checkToken($authorization[1], $authorization[2])) throw new CHttpException(401, $this->getStatusCodeMessage(401));
+        if ($authorization[0] != $AUTHORIZTION_KEY || !Tokens::checkToken($authorization[1], $authorization[2]))
+            throw new CHttpException(401, $this->getStatusCodeMessage(401));
         return true;
     }
 }
