@@ -46,7 +46,7 @@ class Cashier extends CActiveRecord
         // will receive user inputs.
         return array(
             array('loginid, password, display_name, phone', 'required'),
-            array('loginid, display_name, phone', 'unique', 'on' => 'createScenario'),
+            array('loginid, phone', 'unique', 'on' => 'createScenario'),
             array('status', 'numerical', 'integerOnly' => true),
             array('loginid', 'length', 'max' => 60),
             array('password', 'length', 'max' => 64),
