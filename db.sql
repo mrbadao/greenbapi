@@ -113,3 +113,11 @@ CREATE TABLE `greenb_printer`.`fruits` (
   ENGINE = InnoDB
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8;
+
+CREATE TABLE `fruit_ nutrition` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `fruit_id` int(10) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `value` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
