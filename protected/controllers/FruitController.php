@@ -12,9 +12,17 @@ class FruitController extends Controller
             throw new CHttpException(400, $this->getStatusCodeMessage(400));
         if (!isset($postData['data']) || !is_array($postData['data'])) throw new CHttpException(204, $this->getStatusCodeMessage(204));
 
-        $responseData = array();
+        $responseData = array(
+            'success' => false,
+            'data' => array(),
+        );
 
-        $fruits = Fruits::model()->findAll();
+        $criteria = new CDbCriteria();
+        $criteria->addCondition('isuse = 1', 'AND');
+        $fruits = Fruits::model()->findAll($criteria);
+
+        if (!$fruits) $this->render($responseData);
+        $responseData['success'] = true;
 
         foreach ($fruits as $fruit) {
             $fruitNutritions = FruitNutrition::model()->findAllByAttributes(array('fruit_id' => $fruit->id));
@@ -22,7 +30,7 @@ class FruitController extends Controller
             foreach ($fruitNutritions as $fruitNutrition) {
                 $fullFruitData = array_merge($fullFruitData, array($fruitNutrition->name => $fruitNutrition->value));
             }
-            $responseData['fruits'][] = $fullFruitData;
+            $responseData['data'][] = $fullFruitData;
         }
 
         $this->render($responseData);
