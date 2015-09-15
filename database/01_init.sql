@@ -195,6 +195,7 @@ CREATE TABLE `fruits` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `image_name` varchar(120) NOT NULL DEFAULT 'no image',
+  `isuse` int(1) NOT NULL DEFAULT 1,
   `created` datetime DEFAULT NULL,
   `modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
