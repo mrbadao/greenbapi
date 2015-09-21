@@ -12,14 +12,21 @@ class FruitController extends Controller
             throw new CHttpException(400, $this->getStatusCodeMessage(400));
         if (!isset($postData['data']) || !is_array($postData['data'])) throw new CHttpException(204, $this->getStatusCodeMessage(204));
 
+        $postData = $postData['data'];
         $responseData = array(
             'success' => false,
             'data' => array(),
+            'pages' => 1,
         );
 
+        $dependency = new CDbCacheDependency();
         $criteria = new CDbCriteria();
         $criteria->addCondition('isuse = 1', 'AND');
-        $fruits = Fruits::model()->findAll($criteria);
+        $criteria->limit = isset($postData["pagesize"]) ? $postData["pagesize"] : $criteria->limit;
+        $criteria->offset = isset($postData["page"]) ? $criteria->limit * ($postData["page"] - 1) : $criteria->offset;
+
+        $count = Fruits::model()->cache(Yii::app()->params["cache_duration"], $dependency)->count($criteria);
+        $fruits = Fruits::model()->cache(Yii::app()->params["cache_duration"], $dependency)->findAll($criteria);
 
         if (!$fruits) $this->render($responseData);
         $responseData['success'] = true;
@@ -32,6 +39,8 @@ class FruitController extends Controller
             }
             $responseData['data'][] = $fullFruitData;
         }
+
+        $responseData['pages'] = isset($postData["pagesize"]) ? ceil($count / $postData["pagesize"]) : $responseData['pages'];
 
         $this->render($responseData);
     }

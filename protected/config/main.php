@@ -72,8 +72,8 @@ return array(
         'db'=>array(
             'connectionString' => 'mysql:host=localhost;dbname=greenb_cms',
             'emulatePrepare' => true,
-            'username' => 'greenb',
-            'password' => 'e9uLaKsV',
+            'username' => 'root',
+            'password' => '',
             'charset' => 'utf8',
             'initSQLs' => array("SET time_zone = '+07:00';"),
         ),
@@ -81,8 +81,8 @@ return array(
         'db_printer'=>array(
             'connectionString' => 'mysql:host=localhost;dbname=greenb_printer',
             'emulatePrepare' => true,
-            'username' => 'greenb',
-            'password' => 'e9uLaKsV',
+            'username' => 'root',
+            'password' => '',
             'charset' => 'utf8',
             'class' => 'CDbConnection',
             'initSQLs' => array("SET time_zone = '+07:00';"),
